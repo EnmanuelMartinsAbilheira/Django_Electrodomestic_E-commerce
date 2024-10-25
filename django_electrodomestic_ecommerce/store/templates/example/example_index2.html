@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electrodomésticos Barcelos - Tu Tienda Online</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-gray-800">Electrodomésticos Barcelos</a>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-800 hover:text-blue-500">Inicio</a>
+                    <a href="#" class="text-gray-800 hover:text-blue-500">Nosotros</a>
+                    <a href="#" class="text-gray-800 hover:text-blue-500">Contacto</a>
+                    <a href="#" class="text-gray-800 hover:text-blue-500">Tienda</a>
+                    <a href="#" class="relative text-gray-800 hover:text-blue-500">
+                        <i class="bi bi-cart-fill"></i>
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-500 rounded-full">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-cover bg-center h-screen" style="background-image: url('{% static 'assets/hero.jpg' %}');">
+        <div class="flex items-center justify-center h-full bg-gray-900 bg-opacity-50">
+            <div class="text-center">
+                <h1 class="text-white text-5xl font-bold">Electrodomésticos Barcelos</h1>
+                <p class="text-gray-300 mt-4">Tecnología y comodidad para tu hogar</p>
+                <a href="#" class="mt-8 px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg hover:bg-blue-600">Explorar productos</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Products Section -->
+    <section class="container mx-auto px-6 py-10">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Nuestros Productos</h2>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% for product in products %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="relative">
+                    {% if product.is_sale %}
+                    <span class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-bl px-2 py-1">Oferta</span>
+                    {% endif %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-4">
+                    <h3 class="text-gray-800 font-semibold text-lg">{{ product.name }}</h3>
+                    <div class="flex items-center justify-between mt-3">
+                        {% if product.is_sale %}
+                        <span class="text-red-500 text-lg font-bold">${{ product.sale_price }}</span>
+                        <span class="text-gray-400 line-through">${{ product.price }}</span>
+                        {% else %}
+                        <span class="text-gray-800 text-lg font-bold">${{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="#" class="text-blue-500 hover:text-blue-600">Ver detalles</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="bg-blue-600 text-white py-20">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold">¡Ofertas Exclusivas para ti!</h2>
+            <p class="mt-2 mb-8">Regístrate y recibe las mejores promociones en productos exclusivos.</p>
+            <a href="#" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100">Regístrate ahora</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Electrodomésticos Barcelos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+</body>
+</html>
