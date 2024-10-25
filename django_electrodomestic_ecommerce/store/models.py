@@ -9,6 +9,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name 
     
+    #@daverobb2011
+    class Meta:
+        verbose_name_plural = 'categories'
+    
 #marca of products    
 class Marca(models.Model):
     name = models.CharField(max_length=50)
