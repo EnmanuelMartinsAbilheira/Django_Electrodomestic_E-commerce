@@ -11,7 +11,6 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-
                 <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
                 {% endif %}
 
@@ -20,8 +19,9 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="{% url 'home' %}">All Products</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="{$ url 'category' 'Programming' $}">Popular Items</a></li>
-                        <li><a class="dropdown-item" href="{$ url 'category' 'Programming3' $}">New Arrivals</a></li>
+                        {% for category in categories %}
+                            <li><a class="dropdown-item" href="{% url 'category' category.name %}">{{ category.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
             </ul>

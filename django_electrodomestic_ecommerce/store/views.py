@@ -31,7 +31,8 @@ def product(request, pk):
 # Create your views here.
 def home(request):
     products = Product.objects.all()
-    return render(request, 'home.html', {'products':products})
+    categories = Category.objects.all()  # Obteniendo todas las categorías
+    return render(request, 'home.html', {'products': products, 'categories': categories})
 
 
 def about(request):
