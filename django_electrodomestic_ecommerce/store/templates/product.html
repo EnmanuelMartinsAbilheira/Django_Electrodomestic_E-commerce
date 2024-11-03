@@ -32,14 +32,14 @@
                         {% else %}
                         
                             ${{product.price}}
-                            <br>ID: {{ product.id }}
+                            
 
                         {% endif %}
                         
                         <br><br>
                         
                         <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
-                        
+
                         <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">Add to Cart</button>
 
                     </center>    
@@ -70,7 +70,8 @@
 
 
                 success: function(json){
-                    console.log(json)
+                    //console.log(json)
+                    document.getElementById("cart_quantity").textContent = json.qty
                 },
 
                 error: function(xhr, errmsg, err){
