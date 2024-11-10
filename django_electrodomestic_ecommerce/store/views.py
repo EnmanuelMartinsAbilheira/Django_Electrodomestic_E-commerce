@@ -1,11 +1,35 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category
+from .models import Product, Category, Profile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
+
+
+
+def update_info(request):
+    if request.user.is_authenticated:
+        try:
+            current_user = Profile.objects.get(user__id=request.user.id)
+        except Profile.DoesNotExist:
+            messages.error(request, "Profile does not exist for the current user.")
+            return redirect('home')  # O redirigir a otra página
+
+        form = UserInfoForm(request.POST or None, instance=current_user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your info has been updated.")
+            return redirect('home')
+        return render(request, "update_info.html", {'form': form})
+    else:
+        messages.error(request, "You must be logged in to access this page.")
+        return redirect('home')
+
+
+
 
 def update_password(request):
     if request.user.is_authenticated:
@@ -13,7 +37,7 @@ def update_password(request):
         #did they fill oput the form 
         if request.method == 'POST':
             #Do stuff
-            form = ChangePasswordForm(current_user, request.POST)
+            form = UpdateUserForm(current_user, request.POST)
             #is the form valid
             if form.is_valid():
                 form.save()
@@ -122,8 +146,8 @@ def register_user(request):
             #log in user
             user = authenticate(username=username, password=password)
             login(request, user)
-            messages.success(request, ("Have you Registered Succesfully!! Welcome"))
-            return redirect('home')
+            messages.success(request, ("Username created please full out you user infomation"))
+            return redirect('update_info')
         else:
             messages.success(request, ("there was a problem please train again "))
             return redirect('register')
