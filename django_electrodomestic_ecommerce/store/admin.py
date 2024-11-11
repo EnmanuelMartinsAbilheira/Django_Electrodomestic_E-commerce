@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Category, Marca, Customer, Product, Order, Profile
+from .models import Category, Marca, Customer, Product, Order, Profile, ContactMessage
 from django.contrib.auth.models import User
+
 
 # Register your models here.
 admin.site.register(Category)
@@ -28,3 +29,11 @@ admin.site.unregister(User)
 
 # re-register the new way 
 admin.site.register(User, UserAdmin)
+
+
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "subject", "created_at")
+    search_fields = ("name", "email", "subject")

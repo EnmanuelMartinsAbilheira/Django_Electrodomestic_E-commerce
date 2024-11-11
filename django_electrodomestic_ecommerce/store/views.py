@@ -4,9 +4,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, ContactForm
 from django import forms
 from django.db.models import Q
+
+
 
 
 def search(request):
@@ -141,8 +143,18 @@ def home(request):
     return render(request, 'home.html', {'products': products, 'categories': categories})
 
 
+
 def about(request):
-    return render(request, 'about.html', {})
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Thank you for reaching out! We will get back to you soon.")
+            return redirect("about")
+    else:
+        form = ContactForm()
+    return render(request, "about.html", {"form": form})
+
 
 
 def login_user(request):

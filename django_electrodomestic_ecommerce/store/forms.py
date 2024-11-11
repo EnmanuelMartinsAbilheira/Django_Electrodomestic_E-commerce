@@ -1,7 +1,19 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django import forms
-from .models import Profile
+from .models import Profile, ContactMessage
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'phone' ,'subject', 'message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 5}),
+        }
+
+
+
 
 
 class UserInfoForm(forms.ModelForm):
