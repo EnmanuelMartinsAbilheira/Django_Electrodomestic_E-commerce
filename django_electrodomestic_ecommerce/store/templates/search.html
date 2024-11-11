@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Buscar Productos</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Encuentra lo que necesitas</p>
+        </div>
+    </div>
+</header>
+
+<style>
+    /* Búsqueda - Sidebar de Filtros */
+.card-header h5 {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.form-control, .form-select, .input-group-text {
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+
+
+.card h5 {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+}
+
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar de filtros -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Filtros de búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'search' %}">
+                        <!-- Campo de búsqueda -->
+                        <input type="text" name="q" placeholder="Buscar productos..." class="form-control mb-3" value="{{ query }}">
+
+                        <!-- Filtro de categoría -->
+                        <label for="category">Categoría</label>
+                        <select name="category" id="category" class="form-select mb-3">
+                            <option value="">Todas</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == request.GET.category %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- Filtro de marca -->
+                        <label for="marca">Marca</label>
+                        <select name="marca" id="marca" class="form-select mb-3">
+                            <option value="">Todas</option>
+                            {% for mar in marcas %}
+                                <option value="{{ mar.id }}" {% if mar.id|stringformat:"s" == request.GET.marca %}selected{% endif %}>{{ mar.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- Filtro de precio -->
+                        <label for="price">Rango de Precio</label>
+                        <div class="input-group mb-3">
+                            <input type="number" name="min_price" placeholder="Mínimo" class="form-control" value="{{ request.GET.min_price }}">
+                            <span class="input-group-text">a</span>
+                            <input type="number" name="max_price" placeholder="Máximo" class="form-control" value="{{ request.GET.max_price }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Aplicar filtros</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados de búsqueda -->
+        <div class="col-lg-9">
+            <div class="row">
+                {% if products %}
+                    {% for product in products %}
+                        <div class="col mb-5">
+                            <div class="card h-100">
+                                {% if product.is_sale %}
+                                    <div class="badge bg-light text-black position-absolute" style="top:0.5rem; right:0.5rem">Oferta</div>
+                                {% endif %}
+                                <img class="card-img-top" src="{{ product.image.url }}" alt="Imagen del producto">
+                                <div class="card-body p-4 text-center">
+                                    <h5 class="fw-bolder">{{ product.name }}</h5>
+                                    {% if product.is_sale %}
+                                        <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+                                        <span class="text-danger">${{ product.sale_price }}</span>
+                                    {% else %}
+                                        ${{ product.price }}
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+                                    <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">Ver Producto</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No se encontraron productos.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

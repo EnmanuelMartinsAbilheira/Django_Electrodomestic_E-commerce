@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-4 px-lg-5">
+        <!-- Logo de la Marca -->
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">Electrónica Barcelos</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navegación -->
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">
+                        <i class="bi-house-door-fill me-1"></i>Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'search' %}">
+                        <i class="bi-search me-1"></i>Buscar
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">
+                        <i class="bi-info-circle-fill me-1"></i>Nosotros
+                    </a>
+                </li>
+
+                <!-- Dropdown de Categorías -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownCategories" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-grid-fill me-1"></i>Categorías
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategories">
+                        <li><a class="dropdown-item" href="{% url 'category_summary' %}">Todos los Productos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for category in categories %}
+                            <li><a class="dropdown-item" href="{% url 'category' category.name %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+
+                <!-- Opciones de Usuario -->
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i class="bi-box-arrow-right me-1"></i>Cerrar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownProfile" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi-person-circle me-1"></i>Perfil
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownProfile">
+                            <li><a class="dropdown-item" href="{% url 'update_user' %}">Mi Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'update_info' %}">Actualizar Información</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+
+            <!-- Barra de Búsqueda en el Navbar -->
+            <form method="GET" action="{% url 'search' %}" class="d-flex me-3">
+                <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Buscar" name="q" value="{{ query }}">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="bi-search"></i>
+                </button>
+            </form>
+
+            <!-- Carrito de Compras -->
+            <a href="{% url 'cart_summary' %}" class="btn btn-outline-light position-relative">
+                <i class="bi-cart-fill me-1"></i> Carrito
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ cart|length }}
+                </span>
+            </a>
+        </div>
+    </div>
+</nav>

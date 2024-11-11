@@ -1,11 +1,46 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category, Profile
+from .models import Product, Category, Profile, Marca
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
+from django.db.models import Q
+
+
+def search(request):
+    # Preparar los filtros seleccionados
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    marcas = Marca.objects.all()
+
+    query = request.GET.get('q', '')
+    category_filter = request.GET.get('category', '')
+    marca_filter = request.GET.get('marca', '')
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+
+    # Filtrado avanzado de acuerdo con los parámetros enviados por el usuario
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    if category_filter:
+        products = products.filter(category__id=category_filter)
+    if marca_filter:
+        products = products.filter(marca__id=marca_filter)
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    if not products:
+        messages.error(request, "No se encontraron productos para tu búsqueda.")
+    return render(request, "search.html", {
+        'products': products,
+        'query': query,
+        'categories': categories,
+        'marcas': marcas,
+    })
 
 
 
