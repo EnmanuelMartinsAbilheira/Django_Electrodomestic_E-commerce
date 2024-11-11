@@ -9,12 +9,14 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_modified = models.DateTimeField(User, auto_now=True)
     phone = models.CharField(max_length=20, blank=True)
-    address1 = models.CharField(max_length=20, blank=True)
-    address2 = models.CharField(max_length=20, blank=True)
-    city = models.CharField(max_length=20, blank=True)
-    state = models.CharField(max_length=20, blank=True)
-    zipcode = models.CharField(max_length=20, blank=True)
-    country = models.CharField(max_length=20, blank=True)
+    address1 = models.CharField(max_length=200, blank=True)
+    address2 = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=200, blank=True)
+    state = models.CharField(max_length=200, blank=True)
+    zipcode = models.CharField(max_length=200, blank=True)
+    country = models.CharField(max_length=200, blank=True)
+    old_cart  = models.CharField(max_length=200, blank=True, null=True)
+
 
     def __str__(self):
         return self.user.username
@@ -76,6 +78,14 @@ class Product(models.Model):
     #add sale stuff
     is_sale = models.BooleanField(default=False)
     sale_price= models.DecimalField(default=0, decimal_places=2, max_digits=6) #9999,99$
+
+    # Additional fields for appliance details
+    energy_class = models.CharField(max_length=3, choices=[('A++', 'A++'), ('A+', 'A+'), ('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D'), ('E', 'E'), ('F', 'F'), ('G', 'G')], blank=True)
+    dimensions = models.CharField(max_length=50, help_text="Dimensions in cm (HxWxD)", blank=True, null=True)
+    weight = models.DecimalField(max_digits=10, decimal_places=2, help_text="Weight in kg", blank=True, null=True)
+    capacity = models.CharField(max_length=50, help_text="Capacity in liters or kg", blank=True, null=True)
+    color = models.CharField(max_length=30, blank=True, null=True)
+
     
     def __str__(self):
         return self.name 
