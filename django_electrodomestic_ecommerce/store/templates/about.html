@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
 <header class="bg-dark py-5">
     <div class="container text-center text-white">
         <h1 class="display-4 fw-bolder">About Us</h1>
@@ -17,12 +20,8 @@
             <h2>Our Vision</h2>
             <p>To become a leading provider in home electronics, offering sustainable and innovative products.</p>
             <h2>Location</h2>
-            <!-- MapQuest Embed with specific settings to hide search bar -->
-            <iframe 
-                width="100%" height="400" 
-                src="https://www.mapquest.com/embed/map?center=41.536706,-8.618684&zoom=30&showmarker=false&u=light&hidestreetview=false&disablesearch=false" 
-                frameborder="0">
-            </iframe>
+            <!-- Leaflet Map Container -->
+            <div id="map" style="width: 100%; height: 400px; background: #ccc;"></div> <!-- Added background color to test visibility -->
         </div>
 
         <!-- Right column for contact form -->
@@ -33,33 +32,23 @@
                     {% csrf_token %}
                     <div class="form-group mb-3">
                         {{ form.name.label_tag }}
-                        <div class="form-control">
-                            {{ form.name }}
-                        </div>
+                        {{ form.name }}
                     </div>
                     <div class="form-group mb-3">
                         {{ form.email.label_tag }}
-                        <div class="form-control">
-                            {{ form.email }}
-                        </div>
+                        {{ form.email }}
                     </div>
                     <div class="form-group mb-3">
                         {{ form.phone.label_tag }}
-                        <div class="form-control">
-                            {{ form.phone }}
-                        </div>
+                        {{ form.phone }}
                     </div>
                     <div class="form-group mb-3">
                         {{ form.subject.label_tag }}
-                        <div class="form-control">
-                            {{ form.subject }}
-                        </div>
+                        {{ form.subject }}
                     </div>
                     <div class="form-group mb-3">
                         {{ form.message.label_tag }}
-                        <div class="form-control">
-                            {{ form.message }}
-                        </div>
+                        {{ form.message }}
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Send Message</button>
                 </form>
@@ -67,4 +56,22 @@
         </div>
     </div>
 </div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="crossorigin=""></script>
+
+<script>
+    // Initialize the map and set its view to the specified coordinates and zoom level
+    var map = L.map('map').setView([41.536706, -8.618684], 15);
+
+    // Add a tile layer to the map (using OpenStreetMap)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add a marker to the map at the specified coordinates
+    L.marker([41.536706, -8.618684]).addTo(map)
+        .bindPopup("<b>Our Location</b><br>41.536706, -8.618684")
+        .openPopup();
+</script>
 {% endblock %}
