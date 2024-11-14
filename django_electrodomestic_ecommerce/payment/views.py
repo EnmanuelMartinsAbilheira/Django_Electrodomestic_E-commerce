@@ -1,8 +1,56 @@
 from django.shortcuts import render, redirect
 from cart.cart import Cart
 from payment.form import ShippingForm, PaymentForm
-from payment.models import ShippingAddress
+from payment.models import ShippingAddress, Order, OrderItem
+from django.contrib.auth.models import User
 from django.contrib import messages
+
+
+def process_order(request):
+    if request.POST:
+            
+        #Get the cart
+        cart = Cart(request)
+        cart_products = cart.get_prods
+        quantities = cart.get_quants
+        totals = cart.cart_total()
+
+        #get billing info the last page 
+        payment_form = PaymentForm(request.POST or None)
+        # get shipping session data 
+        my_shipping = request.session.get('my_shipping')
+        
+
+        #gather order info
+        full_name = my_shipping['shipping_full_name']
+        email = my_shipping['shipping_email']
+        # create shipping address from session info
+        shipping_address = f"{my_shipping['shipping_address1']}\n{my_shipping['shipping_address2']}\n{my_shipping['shipping_city']}\n{my_shipping['shipping_state']}\n{my_shipping['shipping_zipcode']}\n{my_shipping['shipping_country']}\n"
+        amount_paid = totals
+
+        #create a order
+        if request.user.is_authenticated:
+            #login
+            user = request.user
+            #create order
+            create_order = Order(user=user, full_name=full_name, email=email, shipping_address=shipping_address, amount_paid= amount_paid)
+            create_order.save()
+                
+            messages.success(request, "Order Placed ")
+            return redirect('home')
+            
+        else:
+            create_order = Order(full_name=full_name, email=email, shipping_Address=shipping_address, amount_paid= amount_paid)
+            create_order.save()
+            messages.success(request, "Order Placed ")
+            return redirect('home')
+
+
+
+    else:
+        messages.success(request, "Access Denied")
+        return redirect('home')
+
 
 
 def billing_info(request):
@@ -11,6 +59,10 @@ def billing_info(request):
         cart_products = cart.get_prods
         quantities = cart.get_quants
         totals = cart.cart_total()
+
+        #create a session with ship+ping info
+        my_shipping = request.POST
+        request.session['my_shipping'] = my_shipping
 
         #check to see if user is logged in
         if request.user.is_authenticated:
