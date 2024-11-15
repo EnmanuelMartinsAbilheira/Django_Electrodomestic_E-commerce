@@ -63,7 +63,7 @@ def process_order(request):
             return redirect('home')
 
         else:
-            create_order = Order(full_name=full_name, email=email, shipping_Address=shipping_address, amount_paid= amount_paid)
+            create_order = Order(full_name=full_name, email=email, shipping_address=shipping_address, amount_paid=amount_paid)
             create_order.save()
 
              #add order items
@@ -84,7 +84,7 @@ def process_order(request):
                 for key, value in quantities().items():
                     if int(key) == product.id:
                         #create order item
-                        create_order_item = OrderItem(order_id=order_id, product_id=product_id, quantities=value, price=price)
+                        create_order_item = OrderItem(order_id=order_id, product_id=product_id, quantity=value, price=price)
                         create_order_item.save()
 
             messages.success(request, "Order Placed ")
@@ -116,11 +116,9 @@ def billing_info(request):
             return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities':quantities, 'totals': totals, "shipping_info":request.POST, "billing_form":billing_form})
         else:
             #not logged in 
-            return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities':quantities, 'totals': totals, "shipping_info":request.POST, "billing_form":billing_form})
+            return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities':quantities, 'totals': totals, "shipping_info":request.POST})
             
 
-        shipping_form =request.POST
-        return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities':quantities, 'totals': totals, "shipping_form":shipping_form})
     else:
         messages.success(request, "Access Denied")
         return redirect('home')
