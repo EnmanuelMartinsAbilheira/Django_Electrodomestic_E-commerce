@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Profile, Marca
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -13,6 +13,8 @@ from django import forms
 from django.db.models import Q
 import json
 from cart.cart import Cart
+
+
 
 
 
@@ -147,9 +149,18 @@ def category(request, foo):
         return redirect('homen')
 
 
+#def product(request, pk):
+#    product = Product.objects.get(id=pk)
+#<    return render(request, 'product.html', {'product':product})
+
+
 def product(request, pk):
-    product = Product.objects.get(id=pk)
-    return render(request, 'product.html', {'product':product})
+    product = get_object_or_404(Product, pk=pk)
+    additional_images = product.additional_images.all()
+    return render(request, 'product.html', {
+        'product': product,
+        'additional_images': additional_images
+    })
 
 
 # Create your views here.

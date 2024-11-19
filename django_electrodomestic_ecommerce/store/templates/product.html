@@ -1,40 +1,56 @@
+
+
+
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <!-- Product Image -->
+        <!-- Imagen del producto y carrusel -->
         <div class="col-md-6">
-            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            <div id="productCarousel" class="carousel slide shadow-sm" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{{ product.image.url }}" class="d-block w-100 rounded" alt="{{ product.name }}">
+                    </div>
+                    {% for img in additional_images %}
+                    <div class="carousel-item">
+                        <img src="{{ img.image.url }}" class="d-block w-100 rounded" alt="Additional image of {{ product.name }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Product Details -->
+        <!-- Detalles del producto -->
         <div class="col-md-6">
             <h1 class="display-5">{{ product.name }}</h1>
-            <p class="text-muted">{{ product.marca.name }}</p>
+            <p class="text-muted">
+                Marca: {{ product.marca.name }}<br>
+                Ref: {{ product.reference }} | EAN: {{ product.ean }}
+            </p>
             <hr>
-
-            <!-- Price Section -->
-            {% if product.is_sale %}
+            <div>
+                {% if product.is_sale %}
                 <p class="text-danger fw-bold h4">
                     ${{ product.sale_price }}
                     <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
                 </p>
-            {% else %}
+                {% else %}
                 <p class="h4">${{ product.price }}</p>
-            {% endif %}
+                {% endif %}
+            </div>
+            <p class="mt-4">{{ product.description }}</p>
 
-            <!-- Product Description -->
-            <p>{{ product.description }}</p>
             
-            <!-- Additional Product Information -->
-            <ul class="list-unstyled mt-3">
-                {% if product.energy_class %}<li><strong>Clase Energética:</strong> {{ product.energy_class }}</li>{% endif %}
-                {% if product.dimensions %}<li><strong>Dimensiones:</strong> {{ product.dimensions }}</li>{% endif %}
-                {% if product.weight %}<li><strong>Peso:</strong> {{ product.weight }} kg</li>{% endif %}
-                {% if product.capacity %}<li><strong>Capacidad:</strong> {{ product.capacity }}</li>{% endif %}
-                {% if product.color %}<li><strong>Color:</strong> {{ product.color }}</li>{% endif %}
-            </ul>
 
             <!-- Quantity Selector -->
             <div class="row mt-4">
@@ -51,32 +67,79 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
+
+            <!-- Botones de acción -->
             <div class="d-flex mt-4">
-                <button class="btn btn-primary me-2" id="add-cart" value="{{ product.id }}">Añadir al Carrito</button>
+                <button class="btn btn-primary me-3" id="add-cart" value="{{ product.id }}">Añadir al Carrito</button>
                 <a href="{% url 'home' %}" class="btn btn-secondary">Volver a Inicio</a>
             </div>
         </div>
     </div>
+
+    <!-- Más información (colapsable) -->
+    <div class="mt-5">
+        <button class="btn btn-info text-white w-100 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="productDetails">
+            Más Información del Producto
+        </button>
+        <div class="collapse mt-3" id="productDetails">
+            <div class="card card-body">
+                <ul class="list-group list-group-flush">
+                    {% if product.energy_class %}
+                    <li class="list-group-item"><strong>Clase Energética:</strong> {{ product.energy_class }}</li>
+                    {% endif %}
+                    {% if product.dimensions %}
+                    <li class="list-group-item"><strong>Dimensiones:</strong> {{ product.dimensions }}</li>
+                    {% endif %}
+                    {% if product.weight %}
+                    <li class="list-group-item"><strong>Peso:</strong> {{ product.weight }} kg</li>
+                    {% endif %}
+                    {% if product.capacity %}
+                    <li class="list-group-item"><strong>Capacidad:</strong> {{ product.capacity }}</li>
+                    {% endif %}
+                    {% if product.color %}
+                    <li class="list-group-item"><strong>Color:</strong> {{ product.color }}</li>
+                    {% endif %}
+                    {% if product.emisao_som %}
+                    <li class="list-group-item"><strong>Emisión de Sonido:</strong> {{ product.emisao_som }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button class="btn btn-warning text-white w-100 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#moreProductDetails" aria-expanded="false" aria-controls="moreProductDetails">
+            Información Adicional
+        </button>
+        <div class="collapse mt-3" id="moreProductDetails">
+            <div class="card card-body">
+                <p>{{ product.more_info|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+    
+
 </div>
 
+<br><br>
+
 <script>
-    $(document).on('click', '#add-cart', function(e){
+    $(document).on('click', '#add-cart', function(e) {
         e.preventDefault();
         $.ajax({
             type: 'POST',
             url: '{% url 'cart_add' %}',
             data: {
                 product_id: $('#add-cart').val(),
-                product_qty: $('#qty-cart option:selected').text(),
+                product_qty: $('#qty-cart').val(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 action: 'post'
             },
-            success: function(json){
+            success: function(json) {
                 document.getElementById("cart_quantity").textContent = json.qty;
                 location.reload();
             },
-            error: function(xhr, errmsg, err){
+            error: function(xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
             }
         });

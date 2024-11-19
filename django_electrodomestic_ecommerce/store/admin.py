@@ -1,39 +1,40 @@
 from django.contrib import admin
-from .models import Category, Marca, Customer, Product, Order, Profile, ContactMessage
+from .models import Category, Marca, Customer, Product, ProductImage, Order, Profile, ContactMessage
 from django.contrib.auth.models import User
 
-
-# Register your models here.
+# Registro de modelos
 admin.site.register(Category)
 admin.site.register(Marca)
 admin.site.register(Customer)
-admin.site.register(Product)
 admin.site.register(Profile)
 admin.site.register(Order)
 
-
-#Mix profile into and user info 
+# Mezclar perfil de usuario
 class ProfileInline(admin.StackedInline):
     model = Profile
 
-
-#extend user model
 class UserAdmin(admin.ModelAdmin):
     model = User
     field = ["username", "first_name", "last_name", "email"]
     inlines = [ProfileInline]
 
-
-# Unregister the old way
+# Reemplazar registro de User
 admin.site.unregister(User)
-
-# re-register the new way 
 admin.site.register(User, UserAdmin)
-
-
-
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "subject", "created_at")
     search_fields = ("name", "email", "subject")
+
+# Incluir imágenes adicionales para los productos
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1  # Campos adicionales para cargar imágenes
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'marca', 'is_sale')
+    inlines = [ProductImageInline]
+
+# Registrar Product con configuración personalizada
+admin.site.register(Product, ProductAdmin)
