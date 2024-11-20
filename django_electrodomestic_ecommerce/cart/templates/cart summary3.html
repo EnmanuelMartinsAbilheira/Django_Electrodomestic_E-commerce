@@ -73,27 +73,32 @@
                             <td>${{ totals }}</td>
                         </tr>
                         <tr>
-                            <label for="shipping-method">Método de envío:</label>
-                            <select id="shipping-method" class="form-select" aria-label="Shipping Method">
-                                <option value="0">Recoger en la tienda (Gratis)</option>
-                                <option value="15">Entrega a domicilio ($15)</option>
-                            </select>
+                            <th>IVA (23%):</th>
+                            <td>${{ (totals * 0.23)|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Shipping:</th>
+                            <td>
+                                <div>
+                                    <input type="radio" id="pickup" name="shipping" value="0" checked>
+                                    <label for="pickup">Pickup in Store (Free)</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="delivery" name="shipping" value="15">
+                                    <label for="delivery">Home Delivery ($15)</label>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <th>Total:</th>
-                            <td>${{ tax }}</td>
-                            <td id="total-with-shipping">${{ final_total }}</td>
-
+                            <td id="final-total">${{ (totals + (totals * 0.23))|floatformat:2 }}</td>
                         </tr>
                     </table>
-                    <a href="{% url 'checkout' %}?shipping_cost=" class="btn btn-success w-100 checkout-btn">Checkout</a>
-
+                    <a href="{% url 'checkout' %}" class="btn btn-success w-100">Checkout</a>
                 </div>
             </div>
         </div>
     </div>
-
-
     {% else %}
     <div class="text-center">
         <h3>Your cart is empty.</h3>
@@ -102,64 +107,51 @@
     {% endif %}
 </div>
 
-
 <script>
+    // Update Shipping Total
+    document.querySelectorAll('input[name="shipping"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            const shippingCost = parseFloat(this.value);
+            const subtotal = {{ totals }};
+            const iva = subtotal * 0.23;
+            const total = subtotal + iva + shippingCost;
 
-    $(document).on('click', '.checkout-btn', function (e) {
-        e.preventDefault();
-        var shippingCost = $('#shipping-method').val();
-        var checkoutUrl = $(this).attr('href') + shippingCost;
-        window.location.href = checkoutUrl;
-    });
-
-
-    // Update Total with Shipping
-    $(document).on('change', '#shipping-method', function() {
-        var shippingCost = parseFloat($(this).val());
-        var totalWithVAT = parseFloat("{{ totals }}");
-        var newTotal = totalWithVAT + shippingCost;
-        $('#total-with-shipping').text("Total con envío: $" + newTotal.toFixed(2));
-    });
-
-    // Restore button functionality
-    $(document).on('click', '.update-cart', function(e) {
-        e.preventDefault();
-        var productid = $(this).data('index');
-        $.ajax({
-            type: 'POST',
-            url: '{% url "cart_update" %}',
-            data: {
-                product_id: productid,
-                product_qty: $('#select' + productid).val(),
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-                action: 'post'
-            },
-            success: function(json) {
-                location.reload();
-            },
-            error: function(xhr, errmsg, err) {
-                console.log(errmsg);
-            }
+            document.getElementById("final-total").textContent = `$${total.toFixed(2)}`;
         });
     });
 
-    $(document).on('click', '.delete-product', function(e) {
+    // Update Cart
+    $(document).on('click', '.update-cart', function (e) {
         e.preventDefault();
-        var productid = $(this).data('index');
+        const productId = $(this).data('index');
         $.ajax({
             type: 'POST',
-            url: '{% url "cart_delete" %}',
+            url: '{% url 'cart_update' %}',
             data: {
-                product_id: productid,
+                product_id: productId,
+                product_qty: $('#select' + productId).val(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
-                action: 'post'
             },
-            success: function(json) {
+            success: function () {
                 location.reload();
             },
-            error: function(xhr, errmsg, err) {
-                console.log(errmsg);
-            }
+        });
+    });
+
+    // Delete Product
+    $(document).on('click', '.delete-product', function (e) {
+        e.preventDefault();
+        const productId = $(this).data('index');
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'cart_delete' %}',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function () {
+                location.reload();
+            },
         });
     });
 </script>

@@ -108,10 +108,21 @@
     </div>
 
     <div class="mt-4">
-        <button class="btn btn-warning text-white w-100 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#moreProductDetails" aria-expanded="false" aria-controls="moreProductDetails">
+        <button class="btn btn-warning text-white w-100 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#moreProductDetails1" aria-expanded="false" aria-controls="moreProductDetails1">
+            additional_info Adicional
+        </button>
+        <div class="collapse mt-3" id="moreProductDetails1">
+            <div class="card card-body">
+                <p>{{ product.additional_info|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <button class="btn btn-warning text-white w-100 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#moreProductDetails2" aria-expanded="false" aria-controls="moreProductDetails2">
             Información Adicional
         </button>
-        <div class="collapse mt-3" id="moreProductDetails">
+        <div class="collapse mt-3" id="moreProductDetails2">
             <div class="card card-body">
                 <p>{{ product.more_info|linebreaks }}</p>
             </div>

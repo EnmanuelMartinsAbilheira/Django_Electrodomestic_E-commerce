@@ -51,7 +51,10 @@
 
                                     
                             {% endfor %}
-                                
+                            
+                            <p>Shipping Cost: ${{ shipping_cost }}</p>
+                            <p>Total (including shipping): ${{ final_total }}</p>
+
                             <strong> Total: ${{ totals }}</strong>
                             <br><br>
                             <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-secondary">Update Ietms</a>
