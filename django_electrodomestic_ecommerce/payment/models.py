@@ -39,18 +39,35 @@ post_save.connect(create_shipping, sender=User)
 
 #create order model
 class Order(models.Model):
-    #Foreing key
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     full_name = models.CharField(max_length=250)
     email = models.EmailField(max_length=250)
     shipping_address = models.TextField(max_length=15000)
+    shipping_method = models.CharField( # metodo de envio 
+        max_length=50,
+        choices=[
+            ('store_pickup', 'Recoger en tienda'),
+            ('home_delivery', 'Entrega a domicilio')
+        ],
+        default='store_pickup'
+    )
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    final_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date_ordered = models.DateTimeField(auto_now_add=True)
     shipped = models.BooleanField(default=False)
     date_shipped = models.DateTimeField(blank=True, null=True)
 
-    def __str__(self):
-        return f'Order - {str(self.id)}'
+    def calculate_shipping_cost(self): #valor metodo de envio 
+        """Calcula el costo de envío según el método seleccionado."""
+        if self.shipping_method == 'home_delivery':
+            return 15  # Costo fijo
+        return 0  # Gratis para recoger en tienda
+
+    def save(self, *args, **kwargs):
+        self.shipping_cost = self.calculate_shipping_cost()
+        self.final_total = self.amount_paid + self.shipping_cost
+        super().save(*args, **kwargs)
     
 
 # auto add shipping date
@@ -61,6 +78,12 @@ def set_shipped_date_on_update(sender, instance, **kwargs):
         obj = sender._default_manager.get(pk=instance.pk)
         if instance.shipped and not obj.shipped:
             instance.date_shipped = now
+
+
+
+
+
+
 
 
 
