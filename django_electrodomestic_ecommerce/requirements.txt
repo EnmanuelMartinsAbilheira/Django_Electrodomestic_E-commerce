@@ -4,6 +4,8 @@ Django==5.1.2
 django-environ==0.11.2
 environ==1.0
 gunicorn==23.0.0
+npm==0.1.1
+optional-django==0.1.0
 packaging==24.2
 pillow==11.0.0
 psycopg==3.2.3

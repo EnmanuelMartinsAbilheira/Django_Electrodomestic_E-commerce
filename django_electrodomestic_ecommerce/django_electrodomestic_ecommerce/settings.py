@@ -54,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    #Railway_App need this  
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
@@ -97,7 +99,7 @@ WSGI_APPLICATION = 'django_electrodomestic_ecommerce.wsgi.application'
 # Set default values for the environment variables if they’re not already set
 os.environ.setdefault("PGDATABASE", "postgres")
 os.environ.setdefault("PGUSER", "postgres")
-os.environ.setdefault("PGPASSWORD", "1911eelm2")
+os.environ.setdefault("PGPASSWORD", "")
 os.environ.setdefault("PGHOST", "127.0.0.1")
 os.environ.setdefault("PGPORT", "5432")
 
@@ -156,3 +158,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# need this to Railway_App
+STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+CSRF_TRUSTED_ORIGINS= [""]
