@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config  # Asegúrate de importar decouple
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,7 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-default-key')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,31 +87,33 @@ TEMPLATES = [
 WSGI_APPLICATION = 'django_electrodomestic_ecommerce.wsgi.application'
 
 
-# Database Sqlite
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Leer el valor de DB_LOCAL desde el .env, por defecto es True
+DB_LOCAL = config('DB_LOCAL', default=True, cast=bool)
+
+if DB_LOCAL:
+    # Database Sqlite
+    # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+    # Configuración para SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
-# Database postgress
-
-# Set default values for the environment variables if they’re not already set
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': os.getenv("PGDATABASE", ),
-#        'USER': os.getenv("PGUSER", ),
-#        'PASSWORD': os.getenv("PGPASSWORD", ),
-#        'HOST': os.getenv("PGHOST", "localhost"),
-#        'PORT': os.getenv("PGPORT", 5432),
-#    }
-#}
-
+else:
+    # Set default values for the environment variables if they’re not already set
+    # Configuración para PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('PGDATABASE', default='postgres'),
+            'USER': config('PGUSER', default='postgres'),
+            'PASSWORD': config('PGPASSWORD', default=''),
+            'HOST': config('PGHOST', default='localhost'),
+            'PORT': config('PGPORT', default=5432, cast=int),
+        }
+    }
 
 
 # Password validation
