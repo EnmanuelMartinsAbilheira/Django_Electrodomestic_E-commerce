@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*8c4dft!fpom9q(cl@0-k5@)mz0q8)a#*yz7g^8vjd3#3nw2v)'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cart',
     'payment',
 
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
-    #Railway_App need this  
+    #need this  
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
@@ -83,36 +84,32 @@ TEMPLATES = [
 WSGI_APPLICATION = 'django_electrodomestic_ecommerce.wsgi.application'
 
 
-# Database
+# Database Sqlite
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# Set default values for the environment variables if they’re not already set
-os.environ.setdefault("PGDATABASE", "postgres")
-os.environ.setdefault("PGUSER", "postgres")
-os.environ.setdefault("PGPASSWORD", "")
-os.environ.setdefault("PGHOST", "127.0.0.1")
-os.environ.setdefault("PGPORT", "5432")
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ["PGDATABASE"],
-        'USER': os.environ["PGUSER"],
-        'PASSWORD': os.environ["PGPASSWORD"],
-        'HOST': os.environ["PGHOST"],
-        'PORT': os.environ["PGPORT"],
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Database postgress
+
+# Set default values for the environment variables if they’re not already set
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': os.getenv("PGDATABASE", ),
+#        'USER': os.getenv("PGUSER", ),
+#        'PASSWORD': os.getenv("PGPASSWORD", ),
+#        'HOST': os.getenv("PGHOST", "localhost"),
+#        'PORT': os.getenv("PGPORT", 5432),
+#    }
+#}
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -151,6 +148,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = ['static/']
 
+# White noise static stuff
+STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 MEDIA_URL ='media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -159,7 +160,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# need this to Railway_App
-STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-CSRF_TRUSTED_ORIGINS= [""]
